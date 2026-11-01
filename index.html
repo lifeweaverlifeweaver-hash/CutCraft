@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="bg" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CutCraft - Професионално проектиране и разкрой на мебели</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            accent: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Three.js for 3D Furniture Preview -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .canvas-container canvas { width: 100% !important; height: 100% !important; border-radius: 0.75rem; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; color: black; }
+        }
+        .print-only { display: none; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Header / Navigation -->
+    <header class="no-print border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-accent flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-ruler-combined"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">CutCraft</span>
+                    <span class="text-xs text-brand-accent font-semibold block -mt-1">PRO CABINET & CUTTING ENGINE</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center space-x-6 text-sm text-slate-400">
+                    <a href="#calculator" class="hover:text-white transition">Проектант</a>
+                    <a href="#features" class="hover:text-white transition">Възможности</a>
+                    <a href="#pricing" class="hover:text-white transition">Тарифи</a>
+                </div>
+                <button onclick="scrollToCalc()" class="bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white font-medium px-4 py-2 rounded-lg shadow-md transition text-sm flex items-center space-x-2">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Нов Проект</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- Hero Section -->
+        <section class="no-print bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl border border-slate-800 p-6 md:p-10 relative overflow-hidden shadow-2xl">
+            <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="max-w-3xl relative z-10 space-y-4">
+                <div class="inline-flex items-center space-x-2 bg-slate-800/80 border border-slate-700 px-3 py-1 rounded-full text-xs font-medium text-brand-accent">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Автоматизиран генератор за разкрой и спецификации</span>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-extrabold text-white leading-tight">
+                    Проектирайте мебели за секунди. Вземете точен разкрой.
+                </h1>
+                <p class="text-slate-400 text-base md:text-lg">
+                    Изберете мебел, задайте вашите размери и CutCraft ще генерира детайлна карта за рязане на плоскости, точни кантирания и списък с обков, готови за поръчка в разкроен центр.
+                </p>
+            </div>
+        </section>
+
+        <!-- Interactive Calculator Section -->
+        <section id="calculator" class="no-print grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Panel: Controls & Inputs (5 Cols) -->
+            <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-6 flex flex-col justify-between">
+                <div class="space-y-6">
+                    <div class="border-b border-slate-800 pb-4">
+                        <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-sliders text-brand-500"></i>
+                            <span>Параметри на мебелта</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Изберете тип и въведете милиметри</p>
+                    </div>
+
+                    <!-- Category & Type Selection -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider block">Вид Мебел</label>
+                        <select id="furnitureType" onchange="updateCalculator()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-slate-200 focus:outline-none focus:border-brand-500 text-sm">
+                            <optgroup label="Корпусна мебел & Гардероби">
+                                <option value="standard_cabinet">Стандартен Шкаф / Гардероб</option>
+                                <option value="sliding_wardrobe">Гардероб с плъзгащи врати</option>
+                                <option value="chest_of_drawers">Скрин с чекмеджета</option>
+                                <option value="tv_unit">ТВ Секция / Конзола</option>
+                            </optgroup>
+                            <optgroup label="Кухненски Модули">
+                                <option value="kitchen_base">Кухня: Долен Шкаф</option>
+                                <option value="kitchen_wall">Кухня: Горен Шкаф</option>
+                                <option value="kitchen_tall">Кухня: Колона за фурна/фризер</option>
+                            </optgroup>
+                            <optgroup label="Спални & Офис">
+                                <option value="bed_frame">Легло с подматрачна рамка</option>
+                                <option value="office_desk">Офис Бюро / Заседателна маса</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- Dimensions Inputs (W x H x D) -->
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="text-xs font-semibold text-slate-300 block mb-1">Ширина (W)</label>
+                            <div class="relative">
+                                <input type="number" id="dimW" value="800" min="200" max="3000" oninput="updateCalculator()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-sm focus:border-brand-500 focus:outline-none">
+                                <span class="absolute right-2 top-2 text-xs text-slate-500">мм</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-300 block mb-1">Височина (H)</label>
+                            <div class="relative">
+                                <input type="number" id="dimH" value="2000" min="200" max="3000" oninput="updateCalculator()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-sm focus:border-brand-500 focus:outline-none">
+                                <span class="absolute right-2 top-2 text-xs text-slate-500">мм</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-300 block mb-1">Дълбочина (D)</label>
+                            <div class="relative">
+                                <input type="number" id="dimD" value="550" min="100" max="1200" oninput="updateCalculator()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-100 text-sm focus:border-brand-500 focus:outline-none">
+                                <span class="absolute right-2 top-2 text-xs text-slate-500">мм</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Material & Edge Specs -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs font-semibold text-slate-300 block mb-1">Дебелина ПДЧ/МДФ</label>
+                            <select id="matThickness" onchange="updateCalculator()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 text-sm focus:border-brand-500 focus:outline-none">
+                                <option value="18">18 мм (Стандарт)</option>
+                                <option value="16">16 мм (Економ)</option>
+                                <option value="25">25 мм (Масив/Премиум)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold text-slate-300 block mb-1">Кантиране Л лице</label>
+                            <select id="edgeFront" onchange="updateCalculator()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-slate-200 text-sm focus:border-brand-500 focus:outline-none">
+                                <option value="2.0">PVC 2.0 мм (Устойчиво)</option>
+                                <option value="0.45">PVC 0.45 мм (Тънко)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Internal Configurations -->
+                    <div class="space-y-3 border-t border-slate-800 pt-4">
+                        <label class="text-xs font-semibold text-slate-300 uppercase tracking-wider block">Вътрешно разпределение</label>
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-slate-400 block mb-1">Брой Рафтове</label>
+                                <input type="number" id="shelvesCount" value="3" min="0" max="10" oninput="updateCalculator()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-sm">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-400 block mb-1">Брой Чекмеджета</label>
+                                <input type="number" id="drawersCount" value="0" min="0" max="8" oninput="updateCalculator()" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-sm">
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-slate-950 p-3 rounded-lg border border-slate-800">
+                            <span class="text-xs font-medium text-slate-300">Включи стандартни Врати</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="hasDoors" checked onchange="updateCalculator()" class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Price Indicator & Action -->
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 mt-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 block">Цена за технически проект:</span>
+                            <span id="calculatedPrice" class="text-2xl font-extrabold text-brand-accent">35.00 €</span>
+                        </div>
+                        <span class="text-xs text-slate-400 bg-slate-900 border border-slate-800 px-2 py-1 rounded">Включва: Разкрой + Обков + PDF</span>
+                    </div>
+
+                    <button onclick="openPaymentModal()" class="w-full bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white font-bold py-3 rounded-xl shadow-lg transition flex items-center justify-center space-x-2 text-sm">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        <span>Поръчай проект & Разкрой</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Panel: Live 3D Preview & Decomposed Parts List (7 Cols) -->
+            <div class="lg:col-span-7 space-y-6 flex flex-col">
+                
+                <!-- 3D Viewport Box -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex-grow flex flex-col">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center space-x-2">
+                            <i class="fa-solid fa-cube text-brand-500"></i>
+                            <span>Интерактивна 3D Визуализация</span>
+                        </span>
+                        <span class="text-xs text-slate-400">Завъртете с мишката</span>
+                    </div>
+                    <div id="canvas3d" class="canvas-container w-full h-64 md:h-80 bg-slate-950 rounded-xl overflow-hidden relative border border-slate-800/80">
+                        <div class="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur px-3 py-1 rounded text-[11px] text-slate-400">
+                            Мащаб 1:10 (Параметричен)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Decomposed Cutting Table Preview -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-table-cells text-brand-500"></i>
+                            <span>Автоматично генериран разкрой</span>
+                        </h3>
+                        <span id="totalPartsCount" class="text-xs bg-brand-900/50 border border-brand-700/50 text-brand-300 font-bold px-2.5 py-1 rounded-full">6 детайла</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800">
+                                <tr>
+                                    <th class="p-2.5">Детайл</th>
+                                    <th class="p-2.5">Брой</th>
+                                    <th class="p-2.5">Дължина (мм)</th>
+                                    <th class="p-2.5">Ширина (мм)</th>
+                                    <th class="p-2.5">Кант (Лице/Страни)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="partsTableBody" class="divide-y divide-slate-800/60 font-mono">
+                                <!-- Populated dynamically by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Accessories & Hardware List Preview -->
+        <section class="no-print bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+                <i class="fa-solid fa-screws text-brand-500"></i>
+                <span>Автоматична спецификация на Обков и Крепежи</span>
+            </h3>
+            <div id="hardwareList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <!-- Dynamic Hardware Cards -->
+            </div>
+        </section>
+
+        <!-- Pricing Tiers Info Section -->
+        <section id="pricing" class="no-print space-y-6 pt-6">
+            <div class="text-center max-w-xl mx-auto">
+                <h2 class="text-2xl font-bold text-white">Прозрачно Ценообразуване</h2>
+                <p class="text-slate-400 text-sm mt-1">Плащате само за техническото проектиране и генерирането на пълния разкрой</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Tier 1 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 relative hover:border-slate-700 transition">
+                    <h3 class="text-lg font-bold text-white">Базов проект</h3>
+                    <p class="text-xs text-slate-400">Нощни шкафчета, скринове, малки портманта</p>
+                    <div class="text-3xl font-extrabold text-white">15 € <span class="text-xs text-slate-400 font-normal">/ проект</span></div>
+                    <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-4">
+                        <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>Карта за разкрой & Кантиране</span></li>
+                        <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>Списък с крепежни елементи</span></li>
+                        <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>PDF изтегляне за 1 мин</span></li>
+                    </ul>
+                </div>
+                <!-- Tier 2 (Highlighted) -->
+                <div class="bg-slate-900 border-2 border-brand-500 rounded-2xl p-6 space-y-4 relative shadow-2xl shadow-brand-500/10">
+                    <span class="absolute -top-3 right-4 bg-brand-500 text-white font-bold text-[10px] px-2.5 py-0.5 rounded-full uppercase tracking-wider">Най-популярен</span>
+                    <h3 class="text-lg font-bold text-white">Стандартен проект</h3>
+                    <p class="text-xs text-slate-400">Гардероби, секции, офис бюра</p>
+                    <div class="text-3xl font-extrabold text-white">35 € <span class="text-xs text-slate-400 font-normal">/ проект</span></div>
+                    <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-4">
+                        <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>Пълен разкрой + Луфтове за врати</span></li>
+                        <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>Спецификация за водачи & панти</span></li>
+                        <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>3D схема за сглобяване</span></li>
+                    </ul>
+                </div>
+                <!-- Tier 3 -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 relative hover:border-slate-700 transition">
+                    <h3 class="text-lg font-bold text-white">Комплексен проект</h3>
+                    <p class="text-xs text-slate-400">Цялостни кухни и многомодулни гардеробни</p>
+                    <div class="text-3xl font-extrabold text-white">79 € <span class="text-xs text-slate-400 font-normal">/ проект</span></div>
+                    <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-4">
+                        <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>Всички модули в един разкрой</span></li>
+                        <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>Спецификация за вградени уреди</span></li>
+                        <li class="flex items-center space-x-2"><i class="fa-solid fa-check text-emerald-500"></i><span>Приоритетна поддръжка</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal: Bank Transfer Payment -->
+    <div id="paymentModal" class="no-print fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-6 relative">
+            <button onclick="closePaymentModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="space-y-2">
+                <div class="inline-flex items-center space-x-2 bg-brand-900/50 text-brand-300 border border-brand-700/50 px-2.5 py-1 rounded-full text-xs font-semibold">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <span>Банков Превод (SEPA / IBAN)</span>
+                </div>
+                <h3 class="text-xl font-bold text-white">Данни за плащане на поръчката</h3>
+                <p class="text-xs text-slate-400">Преведете сумата по следната сметка. Проектът се генерира автоматично веднага след получаване на плащането.</p>
+            </div>
+
+            <!-- Bank Order Details Card -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-3 font-mono text-xs">
+                <div class="flex justify-between border-b border-slate-800 pb-2">
+                    <span class="text-slate-500">Сума за превод:</span>
+                    <span id="modalAmount" class="text-brand-accent font-bold text-sm">35.00 €</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-800 pb-2">
+                    <span class="text-slate-500">Получател:</span>
+                    <span class="text-slate-200 font-semibold select-all">ВИКТОР МАРИУСОВ АНДРЕВ</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-800 pb-2">
+                    <span class="text-slate-500">IBAN:</span>
+                    <span class="text-white font-bold select-all bg-slate-900 px-2 py-0.5 rounded border border-slate-800">BG13ESPY40040015448906</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-800 pb-2">
+                    <span class="text-slate-500">BIC / SWIFT:</span>
+                    <span class="text-slate-200 font-semibold select-all">ESPYBGS1</span>
+                </div>
+                <div class="flex justify-between pt-1">
+                    <span class="text-slate-500">Основание (Референтен код):</span>
+                    <span id="modalRefCode" class="text-brand-accent font-bold select-all bg-brand-900/30 px-2 py-0.5 rounded border border-brand-800">CC-89421A</span>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <p class="text-[11px] text-slate-400 leading-relaxed">
+                    * Можете незабавно да симулирате потвърждение на плащането от бутона по-долу, за да прегледате и изтеглите подготвения PDF разкрой и спецификация.
+                </p>
+
+                <div class="flex space-x-3">
+                    <button onclick="simulatePaymentSuccess()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl shadow-lg transition text-xs flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Симулирай Плащане & Експорт</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Printable Technical PDF Export Sheet (Shown on Print / Download trigger) -->
+    <div id="printSheet" class="print-only p-8 bg-white text-black space-y-6">
+        <div class="flex justify-between items-center border-b-2 border-black pb-4">
+            <div>
+                <h1 class="text-2xl font-bold uppercase tracking-wider">CutCraft - ТЕХНИЧЕСКИ ПРОЕКТ & РАЗКРОЙ</h1>
+                <p class="text-sm text-gray-600">Автоматично генерирана спецификация за изработка на мебели</p>
+            </div>
+            <div class="text-right">
+                <div id="printOrderRef" class="font-bold text-lg">CC-XXXXXX</div>
+                <div class="text-xs text-gray-500" id="printDate">Дата: 2026-11-01</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-sm bg-gray-100 p-4 rounded">
+            <div><strong>Тип Мебел:</strong> <span id="printFurnitureType">-</span></div>
+            <div><strong>Дебелина Плоскост:</strong> <span id="printThickness">-</span> мм</div>
+            <div><strong>Габарити (Ш x В x Д):</strong> <span id="printDimensions">-</span> мм</div>
+            <div><strong>Лицев Кант:</strong> <span id="printEdge">-</span> мм</div>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-bold mb-2 border-b border-gray-400 pb-1">1. КАРТА ЗА РАЗКРОЙ И КАНТИРАНЕ</h2>
+            <table class="w-full text-left text-xs border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="border border-gray-300 p-2">Детайл</th>
+                        <th class="border border-gray-300 p-2">Брой</th>
+                        <th class="border border-gray-300 p-2">Дължина (мм)</th>
+                        <th class="border border-gray-300 p-2">Ширина (мм)</th>
+                        <th class="border border-gray-300 p-2">Спецификация Кантиране</th>
+                    </tr>
+                </thead>
+                <tbody id="printPartsBody">
+                    <!-- Populated for printing -->
+                </tbody>
+            </table>
+        </div>
+
+        <div>
+            <h2 class="text-lg font-bold mb-2 border-b border-gray-400 pb-1">2. СПИСЪК НА НЕОБХОДИМИЯ ОБКОВ</h2>
+            <div id="printHardwareBody" class="grid grid-cols-2 gap-2 text-xs">
+                <!-- Populated for printing -->
+            </div>
+        </div>
+
+        <div class="pt-8 text-center text-xs text-gray-500 border-t border-gray-300">
+            CutCraft Engine • Получател на плащането: ВИКТОР МАРИУСОВ АНДРЕВ • IBAN: BG13ESPY40040015448906
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="no-print border-t border-slate-800 bg-slate-900 py-6 mt-12 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                &copy; 2026 <strong>CutCraft</strong>. Всички права запазени. Платформа за автоматизиран разкрой.
+            </div>
+            <div class="flex space-x-4">
+                <span>IBAN: BG13ESPY40040015448906</span>
+                <span>•</span>
+                <span>BIC: ESPYBGS1</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Application Engine Script -->
+    <script>
+        // Global State & 3D Variables
+        let currentCalculatedParts = [];
+        let currentCalculatedHardware = [];
+        let scene, camera, renderer, furnitureMesh;
+
+        // Initialize 3D Engine on Window Load
+        window.onload = function() {
+            init3D();
+            updateCalculator();
+        };
+
+        function scrollToCalc() {
+            document.getElementById('calculator').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Initialize Three.js 3D Viewport
+        function init3D() {
+            const container = document.getElementById('canvas3d');
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x020617); // Slate 950
+
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(15, 15, 25);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0x0284c7, 0.8);
+            dirLight.position.set(10, 20, 15);
+            scene.add(dirLight);
+
+            const gridHelper = new THREE.GridHelper(30, 30, 0x1e293b, 0x0f172a);
+            gridHelper.position.y = -5;
+            scene.add(gridHelper);
+
+            // Orbit controls simulated with mouse move
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            container.addEventListener('mousedown', () => isDragging = true);
+            container.addEventListener('mouseup', () => isDragging = false);
+            container.addEventListener('mousemove', (e) => {
+                if (isDragging && furnitureMesh) {
+                    const deltaMove = { x: e.offsetX - previousMousePosition.x, y: e.offsetY - previousMousePosition.y };
+                    furnitureMesh.rotation.y += deltaMove.x * 0.01;
+                    furnitureMesh.rotation.x += deltaMove.y * 0.01;
+                    renderer.render(scene, camera);
+                }
+                previousMousePosition = { x: e.offsetX, y: e.offsetY };
+            });
+
+            window.addEventListener('resize', () => {
+                if(!container) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                renderer.render(scene, camera);
+            });
+        }
+
+        // Core Calculation Engine
+        function updateCalculator() {
+            const type = document.getElementById('furnitureType').value;
+            const W = parseFloat(document.getElementById('dimW').value) || 800;
+            const H = parseFloat(document.getElementById('dimH').value) || 2000;
+            const D = parseFloat(document.getElementById('dimD').value) || 550;
+            const T = parseFloat(document.getElementById('matThickness').value) || 18;
+            const edgeFront = document.getElementById('edgeFront').value;
+            const shelves = parseInt(document.getElementById('shelvesCount').value) || 0;
+            const drawers = parseInt(document.getElementById('drawersCount').value) || 0;
+            const hasDoors = document.getElementById('hasDoors').checked;
+
+            let parts = [];
+            let hardware = [];
+            let basePrice = 35.00;
+
+            // 1. Calculate Side Panels (Left & Right)
+            parts.append = parts.push;
+            parts.push({
+                name: 'Ляв / Десен Страница',
+                count: 2,
+                length: H,
+                width: D,
+                edge: `PVC ${edgeFront}мм на лицевия ръб`
+            });
+
+            // 2. Bottom & Top Panels
+            const innerWidth = W - (2 * T);
+            parts.push({
+                name: 'Дъно & Таван',
+                count: 2,
+                length: innerWidth,
+                width: D,
+                edge: `PVC ${edgeFront}мм отпред`
+            });
+
+            // 3. Back Panel (HDF/MDF 3mm)
+            parts.push({
+                name: 'Гръб (HDF 3mm)',
+                count: 1,
+                length: H - 4,
+                width: W - 4,
+                edge: 'Без кантиране'
+            });
+
+            // 4. Shelves
+            if (shelves > 0) {
+                parts.push({
+                    name: 'Вътрешен Рафт',
+                    count: shelves,
+                    length: innerWidth - 2,
+                    width: D - 20,
+                    edge: `PVC ${edgeFront}мм преден ръб`
+                });
+            }
+
+            // 5. Doors Logic
+            if (hasDoors) {
+                const doorWidth = (W / 2) - 3; // 2 doors standard
+                const doorHeight = H - 4;
+                parts.push({
+                    name: 'Врата (Лява / Дясна)',
+                    count: 2,
+                    length: doorHeight,
+                    width: doorWidth,
+                    edge: `PVC ${edgeFront}мм по всички 4 страни`
+                });
+
+                // Hardware for doors
+                const hingesPerDoor = H > 1500 ? 4 : 2;
+                hardware.push({ name: 'Панти за врати (с плавно)', qty: hingesPerDoor * 2, unit: 'бр' });
+                hardware.push({ name: 'Дръжки за врати', qty: 2, unit: 'бр' });
+            }
+
+            // 6. Drawers Logic
+            if (drawers > 0) {
+                const drawerFrontHeight = Math.floor((H / drawers) - 10);
+                parts.push({
+                    name: 'Чело на чекмедже',
+                    count: drawers,
+                    length: innerWidth - 4,
+                    width: drawerFrontHeight,
+                    edge: `PVC ${edgeFront}мм по 4-те страни`
+                });
+
+                parts.push({
+                    name: 'Страници чекмедже (Кутия)',
+                    count: drawers * 2,
+                    length: D - 50,
+                    width: 140,
+                    edge: 'PVC 0.45мм'
+                });
+
+                hardware.push({ name: 'Сачмени водачи (плавно затваряне)', qty: drawers, unit: 'комплекта' });
+                hardware.push({ name: 'Дръжки за чекмеджета', qty: drawers, unit: 'бр' });
+            }
+
+            // Standard Hardware
+            hardware.push({ name: 'Конфирматни винтове (7x50mm)', qty: 16 + (shelves * 4), unit: 'бр' });
+            hardware.push({ name: 'Рафтоносачи', qty: shelves * 4, unit: 'бр' });
+            hardware.push({ name: 'Регулируеми крачета', qty: 4, unit: 'бр' });
+
+            // Pricing tier adjustment based on complexity
+            if (H < 1000 && W < 1000) basePrice = 15.00;
+            else if (type.includes('kitchen') || type.includes('sliding')) basePrice = 79.00;
+
+            document.getElementById('calculatedPrice').innerText = `${basePrice.toFixed(2)} €`;
+            document.getElementById('modalAmount').innerText = `${basePrice.toFixed(2)} €`;
+
+            // Render Table & Hardware
+            renderPartsTable(parts);
+            renderHardwareList(hardware);
+
+            currentCalculatedParts = parts;
+            currentCalculatedHardware = hardware;
+
+            // Render 3D Model
+            render3DFurniture(W, H, D, hasDoors, shelves);
+        }
+
+        function renderPartsTable(parts) {
+            const tbody = document.getElementById('partsTableBody');
+            tbody.innerHTML = '';
+            document.getElementById('totalPartsCount').innerText = `${parts.reduce((a, b) => a + b.count, 0)} детайла`;
+
+            parts.forEach(p => {
+                const row = `
+                    <tr class="hover:bg-slate-800/40">
+                        <td class="p-2.5 font-medium text-white">${p.name}</td>
+                        <td class="p-2.5 text-brand-accent font-bold">${p.count}</td>
+                        <td class="p-2.5">${p.length}</td>
+                        <td class="p-2.5">${p.width}</td>
+                        <td class="p-2.5 text-slate-400">${p.edge}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function renderHardwareList(hardware) {
+            const container = document.getElementById('hardwareList');
+            container.innerHTML = '';
+
+            hardware.forEach(h => {
+                const card = `
+                    <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-300 block font-medium">${h.name}</span>
+                            <span class="text-[10px] text-slate-500">Автоматична спецификация</span>
+                        </div>
+                        <span class="text-xs font-bold text-brand-accent bg-brand-900/30 border border-brand-800/50 px-2 py-1 rounded">
+                            ${h.qty} ${h.unit}
+                        </span>
+                    </div>
+                `;
+                container.innerHTML += card;
+            });
+        }
+
+        // Render Parametric 3D Box in Canvas
+        function render3DFurniture(W, H, D, doors, shelves) {
+            if (!scene) return;
+
+            if (furnitureMesh) scene.remove(furnitureMesh);
+
+            furnitureMesh = new THREE.Group();
+
+            // Normalized scale (mm to THREE units)
+            const sx = W / 1000 * 5;
+            const sy = H / 1000 * 5;
+            const sz = D / 1000 * 5;
+
+            // Main Box Frame Wireframe
+            const geometry = new THREE.BoxGeometry(sx, sy, sz);
+            const edges = new THREE.EdgesGeometry(geometry);
+            const lineMat = new THREE.LineBasicMaterial({ color: 0x0284c7, linewidth: 2 });
+            const wireframe = new THREE.LineSegments(edges, lineMat);
+            furnitureMesh.add(wireframe);
+
+            // Semi-transparent solid body
+            const bodyMat = new THREE.MeshPhongMaterial({ color: 0x0f172a, transparent: true, opacity: 0.7 });
+            const solidMesh = new THREE.Mesh(geometry, bodyMat);
+            furnitureMesh.add(solidMesh);
+
+            // Add visual shelves lines
+            for (let i = 1; i <= shelves; i++) {
+                const shelfGeom = new THREE.BoxGeometry(sx * 0.95, 0.1, sz * 0.9);
+                const shelfMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+                const shelfMesh = new THREE.Mesh(shelfGeom, shelfMat);
+                shelfMesh.position.y = -sy/2 + (sy / (shelves + 1)) * i;
+                furnitureMesh.add(shelfMesh);
+            }
+
+            scene.add(furnitureMesh);
+            renderer.render(scene, camera);
+        }
+
+        // Modal Controls
+        function openPaymentModal() {
+            // Generate unique random reference code CC-XXXXXX
+            const randomRef = 'CC-' + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('modalRefCode').innerText = randomRef;
+            document.getElementById('paymentModal').classList.remove('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+        }
+
+        // Simulate Payment & Printable PDF Generation
+        function simulatePaymentSuccess() {
+            closePaymentModal();
+            
+            // Populate Print Template
+            const ref = document.getElementById('modalRefCode').innerText;
+            const type = document.getElementById('furnitureType').selectedOptions[0].text;
+            const W = document.getElementById('dimW').value;
+            const H = document.getElementById('dimH').value;
+            const D = document.getElementById('dimD').value;
+            const T = document.getElementById('matThickness').value;
+            const edge = document.getElementById('edgeFront').value;
+
+            document.getElementById('printOrderRef').innerText = ref;
+            document.getElementById('printFurnitureType').innerText = type;
+            document.getElementById('printDimensions').innerText = `${W} x ${H} x ${D}`;
+            document.getElementById('printThickness').innerText = T;
+            document.getElementById('printEdge').innerText = edge;
+
+            // Populate Parts Table for Print
+            const printPartsBody = document.getElementById('printPartsBody');
+            printPartsBody.innerHTML = '';
+            currentCalculatedParts.forEach(p => {
+                printPartsBody.innerHTML += `
+                    <tr>
+                        <td class="border border-gray-300 p-2 font-bold">${p.name}</td>
+                        <td class="border border-gray-300 p-2">${p.count}</td>
+                        <td class="border border-gray-300 p-2">${p.length}</td>
+                        <td class="border border-gray-300 p-2">${p.width}</td>
+                        <td class="border border-gray-300 p-2">${p.edge}</td>
+                    </tr>
+                `;
+            });
+
+            // Populate Hardware for Print
+            const printHardwareBody = document.getElementById('printHardwareBody');
+            printHardwareBody.innerHTML = '';
+            currentCalculatedHardware.forEach(h => {
+                printHardwareBody.innerHTML += `
+                    <div class="p-2 border border-gray-300 bg-gray-50 flex justify-between">
+                        <span>${h.name}</span>
+                        <strong>${h.qty} ${h.unit}</strong>
+                    </div>
+                `;
+            });
+
+            // Trigger Browser Print Dialog (Generates PDF)
+            window.print();
+        }
+    </script>
+</body>
+</html>
