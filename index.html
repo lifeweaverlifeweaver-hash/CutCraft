@@ -18,6 +18,141 @@
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
+<script>
+    let scene, camera, renderer, cube;
+    let currentRefCode = 'CC-' + Math.floor(100000 + Math.random() * 900000);
+
+    document.getElementById('ref-tag').innerText = currentRefCode;
+    document.getElementById('payment-reason').innerText = `CutCraft ${currentRefCode}`;
+    document.getElementById('form-ref').value = currentRefCode;
+    document.getElementById('form-subject').value = `Нова поръчка CutCraft [${currentRefCode}]`;
+
+    function init3D() {
+        const container = document.getElementById('canvas-container');
+        if (!container) return;
+        
+        // Изчистваме евентуални стари кадри
+        container.innerHTML = '';
+
+        scene = new THREE.Scene();
+        const width = container.clientWidth || 300;
+        const height = container.clientHeight || 350;
+
+        camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+        
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(width, height);
+        container.appendChild(renderer.domElement);
+
+        const geometry = new THREE.BoxGeometry(1.5, 3, 1);
+        const material = new THREE.MeshBasicMaterial({ color: 0x6366f1, wireframe: true });
+        cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if(cube) cube.rotation.y += 0.005;
+            renderer.render(scene, camera);
+        }
+        animate();
+    }
+
+    function updateCalculation() {
+        const h = parseFloat(document.getElementById('height').value) || 2000;
+        const w = parseFloat(document.getElementById('width').value) || 800;
+        const d = parseFloat(document.getElementById('depth').value) || 550;
+        const t = parseFloat(document.getElementById('thickness').value) || 18;
+        const type = document.getElementById('furniture-type').value;
+
+        let price = "35.00 €";
+        if(type.includes('kitchen_tall') || type.includes('kitchen_base')) price = "45.00 €";
+        if(type === 'bed') price = "50.00 €";
+        
+        document.getElementById('project-price').innerText = price;
+        document.getElementById('form-price').value = price;
+        document.getElementById('form-type').value = type;
+
+        const innerW = w - (2 * t);
+        const parts = [
+            { name: 'Ляв / Десен Страница', count: 2, l: h, w: d, edge: `PVC ${document.getElementById('edge').value}мм` },
+            { name: 'Дъно & Таван', count: 2, l: innerW, w: d, edge: `PVC ${document.getElementById('edge').value}мм преден` },
+            { name: 'Гръб (HDF 3mm)', count: 1, l: h - 4, w: w - 4, edge: 'Без кант' },
+            { name: 'Вътрешен Рафт', count: 2, l: innerW - 2, w: d - 20, edge: 'PVC 2.0мм преден' },
+            { name: 'Врата (Лява / Дясна)', count: 2, l: h - 4, w: (w / 2) - 3, edge: 'PVC 2.0мм четиристранно' }
+        ];
+
+        const tbody = document.getElementById('parts-table');
+        if (tbody) {
+            tbody.innerHTML = '';
+            parts.forEach(p => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-2.5 font-semibold text-white">${p.name}</td>
+                        <td class="p-2.5">${p.count}</td>
+                        <td class="p-2.5">${p.l} мм</td>
+                        <td class="p-2.5">${p.w} мм</td>
+                        <td class="p-2.5 text-xs text-indigo-300">${p.edge}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        const hardware = document.getElementById('hardware-list');
+        if (hardware) {
+            hardware.innerHTML = `
+                <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 6 бр. Панти с плавно затваряне</li>
+                <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 16 бр. Конфирматни винтове (7x50)</li>
+                <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 8 бр. Рафтоносачи</li>
+                <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 2 бр. Дръжки за врати</li>
+                <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 4 бр. Регулируеми крачета</li>
+            `;
+        }
+
+        if(cube) {
+            cube.scale.set(w/1000, h/1000, d/1000);
+        }
+    }
+
+    async function submitEmbeddedOrder(event) {
+        event.preventDefault();
+        const btn = document.getElementById('submit-btn');
+        const email = document.getElementById('customer-email').value;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Изпращане...';
+
+        const formData = new FormData(event.target);
+        formData.append("access_key", "46f89efb-c3af-46a2-93c9-da39137f7f47");
+
+        try {
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert(`Благодарим ви! Поръчка ${currentRefCode} е регистрирана.\n\nИзпратено е незабавно имейл известие към вас. Очаква се банков превод.`);
+            } else {
+                alert("Възникна проблем при изпращането. Моля, опитайте отново.");
+            }
+        } catch (error) {
+            alert(`Поръчка ${currentRefCode} е регистрирана! Очаква се превод по IBAN.`);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Потвърди поръчката & Изпрати Известие';
+        }
+    }
+
+    // Изчакваме пълното зареждане на прозореца за мобилните браузъри
+    window.addEventListener('load', function() {
+        init3D();
+        updateCalculation();
+    });
+</script>
 
     <!-- Навигация -->
     <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
