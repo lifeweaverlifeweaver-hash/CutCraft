@@ -23,8 +23,8 @@
 
     <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- Конфигуратор (Лява колона - възстановена) -->
-        <section class="lg:col-span-5 bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl space-y-6">
+        <!-- Конфигуратор (Сега е първи и излиза най-отгоре на телефона) -->
+        <section class="lg:col-span-5 bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl space-y-6 order-1 lg:order-1">
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-sliders text-indigo-400"></i> Параметри на мебелния модул
             </h2>
@@ -83,8 +83,8 @@
             </div>
         </section>
 
-        <!-- Резултати и Разкрой (Дясна колона) -->
-        <section class="lg:col-span-7 space-y-6">
+        <!-- Резултати и Разкрой -->
+        <section class="lg:col-span-7 space-y-6 order-2 lg:order-2">
             
             <div class="bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl shadow-xl text-center space-y-3">
                 <h3 class="text-lg font-bold text-white flex items-center justify-between">
@@ -138,9 +138,4 @@
                 </div>
 
                 <form id="order-form" onsubmit="submitEmbeddedOrder(event)" class="space-y-3 pt-2">
-                    <input type="hidden" name="access_key" value="46f89efb-c3af-46a2-93c9-da39137f7f47">
-                    <input type="hidden" name="subject" id="form-subject" value="Нова поръчка CutCraft">
-                    <input type="hidden" name="from_name" value="CutCraft Platform">
-                    <input type="hidden" id="form-ref" name="Reference_Code" value="">
-                    <input type="hidden" id="form-price" name="Order_Price" value="">
-                    <input type="hidden" id="form-type" name="
+                    <input type="hidden" name="access_key" value="46f89efb-c3af-46a2-93c9-da39137f7
