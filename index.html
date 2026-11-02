@@ -23,8 +23,8 @@
 
     <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- Конфигуратор (Гарантирано най-отгоре на мобилни устройства) -->
-        <section class="lg:col-span-5 bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl space-y-6 order-1 lg:order-1">
+        <!-- Конфигуратор -->
+        <section class="lg:col-span-5 bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl space-y-6">
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-sliders text-indigo-400"></i> Параметри на мебелния модул
             </h2>
@@ -32,4 +32,112 @@
             <div>
                 <label class="block text-sm font-medium mb-2 text-slate-300">Избор на тип мебел</label>
                 <select id="furniture-type" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none" onchange="updateCalculation()">
-                    <option value="wardrobe">Гардероб / Страничен Шкаф</option
+                    <option value="wardrobe">Гардероб / Страничен Шкаф</option>
+                    <option value="kitchen_base">Кухня: Долен шкаф</option>
+                    <option value="kitchen_top">Кухня: Горен шкаф</option>
+                    <option value="kitchen_tall">Кухня: Колона за фурна/фризер</option>
+                    <option value="commode">Скрин / Шкаф с чекмеджета</option>
+                    <option value="desk">Офис бюро / Работна маса</option>
+                    <option value="bed">Легла & Основи</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Височина (мм)</label>
+                    <input type="number" id="height" value="2000" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-center text-white font-bold" oninput="updateCalculation()">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Ширина (мм)</label>
+                    <input type="number" id="width" value="800" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-center text-white font-bold" oninput="updateCalculation()">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Дълбочина (мм)</label>
+                    <input type="number" id="depth" value="550" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-center text-white font-bold" oninput="updateCalculation()">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Плоскост (ПДЧ/МДФ)</label>
+                    <select id="thickness" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white" onchange="updateCalculation()">
+                        <option value="18">18 мм (Стандарт)</option>
+                        <option value="16">16 мм</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Лицев Кант</label>
+                    <select id="edge" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white" onchange="updateCalculation()">
+                        <option value="2.0">PVC 2.0 мм</option>
+                        <option value="0.45">PVC 0.45 мм</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="p-4 bg-indigo-950/40 border border-indigo-900/60 rounded-xl space-y-2">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">Цена за генериране на проект:</span>
+                    <span id="project-price" class="text-xl font-black text-indigo-400">35.00 €</span>
+                </div>
+                <p class="text-xs text-slate-400">Включва: Параметричен разкрой, кантиране, спецификация на обков и PDF документ.</p>
+            </div>
+        </section>
+
+        <!-- Резултати и Разкрой -->
+        <section class="lg:col-span-7 space-y-6">
+            
+            <div class="bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl shadow-xl text-center space-y-3">
+                <h3 class="text-lg font-bold text-white flex items-center justify-between">
+                    <span><i class="fa-solid fa-cube text-indigo-400 mr-2"></i> Визуализация на модула</span>
+                    <span id="dim-badge" class="text-xs bg-indigo-900/80 text-indigo-300 px-2.5 py-1 rounded font-mono">2000 x 800 x 550 мм</span>
+                </h3>
+                <div class="w-full h-40 bg-slate-900/90 border border-slate-700 rounded-xl flex flex-col items-center justify-center text-indigo-400 space-y-2">
+                    <i class="fa-solid fa-box-open text-4xl animate-pulse"></i>
+                    <span class="text-sm font-medium text-slate-300">Параметричен модел активен</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl shadow-xl space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-white"><i class="fa-solid fa-list-check text-indigo-400 mr-2"></i> Детайли за разкрой</h3>
+                    <span id="ref-tag" class="text-xs bg-slate-700 px-3 py-1 rounded-full text-indigo-300 font-mono font-bold">CC-XXXXXX</span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-900/80 text-slate-400 uppercase text-xs">
+                            <tr>
+                                <th class="p-2.5">Детайл</th>
+                                <th class="p-2.5">Брой</th>
+                                <th class="p-2.5">Дължина</th>
+                                <th class="p-2.5">Ширина</th>
+                                <th class="p-2.5">Кантиране</th>
+                            </tr>
+                        </thead>
+                        <tbody id="parts-table" class="divide-y divide-slate-700/50"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl shadow-xl">
+                <h3 class="text-lg font-bold text-white mb-3"><i class="fa-solid fa-screwdriver-wrench text-indigo-400 mr-2"></i> Необходим обков & механизми</h3>
+                <ul id="hardware-list" class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-slate-300"></ul>
+            </div>
+
+            <div class="bg-indigo-950/50 border border-indigo-800 p-6 rounded-2xl shadow-xl space-y-4">
+                <h3 class="text-xl font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-indigo-400"></i> Банков превод & Получаване на проект
+                </h3>
+                <p class="text-sm text-slate-300">Моля, преведете сумата по следната банкова сметка. След регистрация ще получите готов технически проект директно на имейла си!</p>
+                
+                <div class="bg-slate-900 p-4 rounded-xl space-y-2 text-sm font-mono border border-slate-700">
+                    <div><span class="text-slate-400">Получател:</span> <strong class="text-white">ВИКТОР МАРИУСОВ АНДРЕВ</strong></div>
+                    <div><span class="text-slate-400">IBAN:</span> <strong class="text-indigo-400">BG13ESPY40040015448906</strong></div>
+                    <div><span class="text-slate-400">BIC:</span> <strong class="text-white">ESPYBGS1</strong></div>
+                    <div><span class="text-slate-400">Основание:</span> <strong id="payment-reason" class="text-amber-400">CutCraft CC-XXXXXX</strong></div>
+                </div>
+
+                <form id="order-form" onsubmit="submitEmbeddedOrder(event)" class="space-y-3 pt-2">
+                    <input type="hidden" name="access_key" value="46f89efb-c3af-46a2-93c9-da39137f7f47">
+                    <input type="hidden" name="subject" id="form-subject" value="Нова поръчка CutCraft">
+                    <input type="hidden" name="from
