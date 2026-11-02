@@ -136,9 +136,9 @@
                 <p class="text-sm text-slate-300">Моля, преведете сумата по следната банкова сметка. След регистрация ще получите готов технически проект директно на имейла си!</p>
                 
                 <div class="bg-slate-900 p-4 rounded-xl space-y-2 text-sm font-mono border border-slate-700">
-                    <div><span class="text-slate-400">Получател:</span> <strong class="text-white">ВИКТОР МАРИУСОВ АНДРЕВ</strong>[span_0](start_span)[span_0](end_span)</div>
-                    <div><span class="text-slate-400">IBAN:</span> <strong class="text-indigo-400">BG13ESPY40040015448906</strong>[span_1](start_span)[span_1](end_span)</div>
-                    <div><span class="text-slate-400">BIC:</span> <strong class="text-white">ESPYBGS1</strong>[span_2](start_span)[span_2](end_span)</div>
+                    <div><span class="text-slate-400">Получател:</span> <strong class="text-white">ВИКТОР МАРИУСОВ АНДРЕВ</strong></div>
+                    <div><span class="text-slate-400">IBAN:</span> <strong class="text-indigo-400">BG13ESPY40040015448906</strong></div>
+                    <div><span class="text-slate-400">BIC:</span> <strong class="text-white">ESPYBGS1</strong></div>
                     <div><span class="text-slate-400">Основание:</span> <strong id="payment-reason" class="text-amber-400">CutCraft CC-XXXXXX</strong></div>
                 </div>
 
@@ -162,3 +162,32 @@
 
         </section>
     </main>
+
+    <script>
+        let scene, camera, renderer, cube;
+        let currentRefCode = 'CC-' + Math.floor(100000 + Math.random() * 900000);
+
+        document.getElementById('ref-tag').innerText = currentRefCode;
+        document.getElementById('payment-reason').innerText = `CutCraft ${currentRefCode}`;
+        document.getElementById('form-ref').value = currentRefCode;
+        document.getElementById('form-subject').value = `Нова поръчка CutCraft [${currentRefCode}]`;
+
+        function init3D() {
+            const container = document.getElementById('canvas-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+
+            scene = new THREE.Scene();
+            const width = container.clientWidth || 300;
+            const height = container.clientHeight || 380;
+
+            camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(width, height);
+            container.appendChild(renderer.domElement);
+
+            const geometry = new THREE.BoxGeometry(1.5, 3, 1);
+            const material = new THREE.MeshBasicMaterial({ color: 0x6366f1, wireframe: true });
+            cube = new THREE.Mesh(geometry, material
