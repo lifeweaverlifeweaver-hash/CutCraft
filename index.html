@@ -5,17 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CutCraft - Интелигентно Проектиране и Разкрой на Мебели</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        #canvas-container {
-            width: 100%;
-            height: 380px;
-            background: #1e293b;
-            border-radius: 0.75rem;
-            overflow: hidden;
-        }
-    </style>
 </head>
 <body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
 
@@ -33,6 +23,7 @@
 
     <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
+        <!-- Конфигуратор -->
         <section class="lg:col-span-5 bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl space-y-6">
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-sliders text-indigo-400"></i> Параметри на мебелния модул
@@ -92,14 +83,18 @@
             </div>
         </section>
 
+        <!-- Визуализация и резултати -->
         <section class="lg:col-span-7 space-y-6">
             
-            <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-2xl shadow-xl">
-                <h3 class="text-lg font-bold text-white mb-3 flex items-center justify-between">
-                    <span><i class="fa-solid fa-cube text-indigo-400 mr-2"></i> 3D Модел в реално време</span>
-                    <span class="text-xs font-normal text-slate-400">Интерактивен изглед</span>
+            <div class="bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl shadow-xl text-center space-y-3">
+                <h3 class="text-lg font-bold text-white flex items-center justify-between">
+                    <span><i class="fa-solid fa-cube text-indigo-400 mr-2"></i> Визуализация на модула</span>
+                    <span id="dim-badge" class="text-xs bg-indigo-900/80 text-indigo-300 px-2.5 py-1 rounded font-mono">2000 x 800 x 550 мм</span>
                 </h3>
-                <div id="canvas-container"></div>
+                <div class="w-full h-48 bg-slate-900/90 border border-slate-700 rounded-xl flex flex-col items-center justify-center text-indigo-400 space-y-2">
+                    <i class="fa-solid fa-box-open text-5xl animate-pulse"></i>
+                    <span class="text-sm font-medium text-slate-300">Параметричен модел активен</span>
+                </div>
             </div>
 
             <div class="bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl shadow-xl space-y-4">
@@ -164,30 +159,50 @@
     </main>
 
     <script>
-        let scene, camera, renderer, cube;
         let currentRefCode = 'CC-' + Math.floor(100000 + Math.random() * 900000);
 
         document.getElementById('ref-tag').innerText = currentRefCode;
         document.getElementById('payment-reason').innerText = `CutCraft ${currentRefCode}`;
         document.getElementById('form-ref').value = currentRefCode;
-        document.getElementById('form-subject').value = `Нова поръчка CutCraft [${currentRefCode}]`;
+        document.getElementById('form-subject').value = `Нова поръчка CutCraft [${currentRefCode}]`;  function updateCalculation() { const h = parseFloat(document.getElementById('height').value) \vert{}\vert{} 2000; const w = parseFloat(document.getElementById('width').value) \vert{}\vert{} 800; const d = parseFloat(document.getElementById('depth').value) \vert{}\vert{} 550; const t = parseFloat(document.getElementById('thickness').value) \vert{}\vert{} 18; const type = document.getElementById('furniture-type').value;  document.getElementById('dim-badge').innerText = `${h} x ${w} x${d} мм`;
 
-        function init3D() {
-            const container = document.getElementById('canvas-container');
-            if (!container) return;
+            let price = "35.00 €";
+            if(type.includes('kitchen_tall') || type.includes('kitchen_base')) price = "45.00 €";
+            if(type === 'bed') price = "50.00 €";
             
-            container.innerHTML = '';
+            document.getElementById('project-price').innerText = price;
+            document.getElementById('form-price').value = price;
+            document.getElementById('form-type').value = type;
 
-            scene = new THREE.Scene();
-            const width = container.clientWidth || 300;
-            const height = container.clientHeight || 380;
+            const innerW = w - (2 * t);
+            const parts = [
+                { name: 'Ляв / Десен Страница', count: 2, l: h, w: d, edge: `PVC ${document.getElementById('edge').value}мм` }, { name: 'Дъно & Таван', count: 2, l: innerW, w: d, edge: `PVC ${document.getElementById('edge').value}мм преден` },
+                { name: 'Гръб (HDF 3mm)', count: 1, l: h - 4, w: w - 4, edge: 'Без кант' },
+                { name: 'Вътрешен Рафт', count: 2, l: innerW - 2, w: d - 20, edge: 'PVC 2.0мм преден' },
+                { name: 'Врата (Лява / Дясна)', count: 2, l: h - 4, w: (w / 2) - 3, edge: 'PVC 2.0мм четиристранно' }
+            ];
 
-            camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-            
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(width, height);
-            container.appendChild(renderer.domElement);
+            const tbody = document.getElementById('parts-table');
+            if (tbody) {
+                tbody.innerHTML = '';
+                parts.forEach(p => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="p-2.5 font-semibold text-white">${p.name}</td>
+                            <td class="p-2.5">${p.count}</td>
+                            <td class="p-2.5">${p.l} мм</td>
+                            <td class="p-2.5">${p.w} мм</td>
+                            <td class="p-2.5 text-xs text-indigo-300">${p.edge}</td>
+                        </tr>
+                    `;
+                });
+            }
 
-            const geometry = new THREE.BoxGeometry(1.5, 3, 1);
-            const material = new THREE.MeshBasicMaterial({ color: 0x6366f1, wireframe: true });
-            cube = new THREE.Mesh(geometry, material
+            const hardware = document.getElementById('hardware-list');
+            if (hardware) {
+                hardware.innerHTML = `
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 6 бр. Панти с плавно затваряне</li>
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 16 бр. Конфирматни винтове (7x50)</li>
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 8 бр. Рафтоносачи</li>
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 2 бр. Дръжки за врати</li>
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 4 бр. Регулиру
