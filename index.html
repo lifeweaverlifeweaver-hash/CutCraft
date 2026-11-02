@@ -9,7 +9,7 @@
     <style>
         @keyframes floatCube {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-6px) rotate(3deg); }
+            50% { transform: translateY(-5px) rotate(2deg); }
         }
         .animate-cube-float {
             animation: floatCube 4s ease-in-out infinite;
@@ -33,4 +33,54 @@
     <main class="max-w-xl mx-auto px-4 py-6 space-y-6">
         
         <!-- 1. Конфигуратор -->
-        <section class="bg-slate-800/90 border border-slate
+        <section class="bg-slate-800/90 border border-slate-700 p-5 rounded-2xl space-y-4 shadow-xl">
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-sliders text-indigo-400"></i> Параметри на мебелния модул
+            </h2>
+
+            <div>
+                <label class="block text-xs font-medium mb-1 text-slate-300">Избор на тип мебел</label>
+                <select id="furniture-type" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white text-sm focus:ring-2 focus:ring-indigo-500 outline-none" onchange="updateCalculation()">
+                    <option value="wardrobe">Гардероб / Страничен Шкаф</option>
+                    <option value="kitchen_base">Кухня: Долен шкаф</option>
+                    <option value="kitchen_top">Кухня: Горен шкаф</option>
+                    <option value="kitchen_tall">Кухня: Колона за фурна/фризер</option>
+                    <option value="commode">Скрин / Шкаф с чекмеджета</option>
+                    <option value="desk">Офис бюро / Работна маса</option>
+                    <option value="bed">Легла & Основи</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Височина (мм)</label>
+                    <input type="number" id="height" value="2000" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-center text-white font-bold text-sm" oninput="updateCalculation()">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Ширина (мм)</label>
+                    <input type="number" id="width" value="800" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-center text-white font-bold text-sm" oninput="updateCalculation()">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Дълбочина (мм)</label>
+                    <input type="number" id="depth" value="550" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-center text-white font-bold text-sm" oninput="updateCalculation()">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Плоскост (ПДЧ/МДФ)</label>
+                    <select id="thickness" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white text-sm" onchange="updateCalculation()">
+                        <option value="18">18 мм (Стандарт)</option>
+                        <option value="16">16 мм</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-medium text-slate-400 mb-1">Лицев Кант</label>
+                    <select id="edge" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white text-sm" onchange="updateCalculation()">
+                        <option value="2.0">PVC 2.0 мм</option>
+                        <option value="0.45">PVC 0.45 мм</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="p-3 bg-indigo-950/40 border border-indigo-900/6
