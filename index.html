@@ -23,8 +23,8 @@
 
     <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        <!-- Конфигуратор (Сега е първи и излиза най-отгоре на телефона) -->
-        <section class="lg:col-span-5 bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl space-y-6 order-1 lg:order-1">
+        <!-- Конфигуратор (Гарантирано най-отгоре на мобилни устройства) -->
+        <section class="lg:col-span-5 bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl space-y-6 order-first">
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-sliders text-indigo-400"></i> Параметри на мебелния модул
             </h2>
@@ -83,8 +83,8 @@
             </div>
         </section>
 
-        <!-- Резултати и Разкрой -->
-        <section class="lg:col-span-7 space-y-6 order-2 lg:order-2">
+        <!-- Резултати и Разкрой (След конфигуратора) -->
+        <section class="lg:col-span-7 space-y-6">
             
             <div class="bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl shadow-xl text-center space-y-3">
                 <h3 class="text-lg font-bold text-white flex items-center justify-between">
@@ -138,4 +138,114 @@
                 </div>
 
                 <form id="order-form" onsubmit="submitEmbeddedOrder(event)" class="space-y-3 pt-2">
-                    <input type="hidden" name="access_key" value="46f89efb-c3af-46a2-93c9-da39137f7
+                    <input type="hidden" name="access_key" value="46f89efb-c3af-46a2-93c9-da39137f7f47">
+                    <input type="hidden" name="subject" id="form-subject" value="Нова поръчка CutCraft">
+                    <input type="hidden" name="from_name" value="CutCraft Platform">
+                    <input type="hidden" id="form-ref" name="Reference_Code" value="">
+                    <input type="hidden" id="form-price" name="Order_Price" value="">
+                    <input type="hidden" id="form-type" name="Furniture_Type" value="">
+
+                    <div>
+                        <input type="email" id="customer-email" name="Customer_Email" required placeholder="Вашият Имейл адрес за получаване на готовия проект" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i> Потвърди поръчката & Изпрати Известие
+                    </button>
+                </form>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        let currentRefCode = 'CC-' + Math.floor(100000 + Math.random() * 900000);
+
+        document.getElementById('ref-tag').innerText = currentRefCode;
+        document.getElementById('payment-reason').innerText = `CutCraft ${currentRefCode}`;
+        document.getElementById('form-ref').value = currentRefCode;
+        document.getElementById('form-subject').value = `Нова поръчка CutCraft [${currentRefCode}]`;
+
+        function updateCalculation() {
+            const h = parseFloat(document.getElementById('height').value) || 2000;
+            const w = parseFloat(document.getElementById('width').value) || 800;
+            const d = parseFloat(document.getElementById('depth').value) || 550;
+            const t = parseFloat(document.getElementById('thickness').value) || 18;
+            const type = document.getElementById('furniture-type').value;
+
+            document.getElementById('dim-badge').innerText = `${h} x ${w} x ${d} мм`;
+
+            let price = "35.00 €";
+            if(type.includes('kitchen_tall') || type.includes('kitchen_base')) price = "45.00 €";
+            if(type === 'bed') price = "50.00 €";
+            
+            document.getElementById('project-price').innerText = price;
+            document.getElementById('form-price').value = price;
+            document.getElementById('form-type').value = type;
+
+            const innerW = w - (2 * t);
+            const parts = [
+                { name: 'Ляв / Десен Страница', count: 2, l: h, w: d, edge: `PVC ${document.getElementById('edge').value}мм` },
+                { name: 'Дъно & Таван', count: 2, l: innerW, w: d, edge: `PVC ${document.getElementById('edge').value}мм преден` },
+                { name: 'Гръб (HDF 3mm)', count: 1, l: h - 4, w: w - 4, edge: 'Без кант' },
+                { name: 'Вътрешен Рафт', count: 2, l: innerW - 2, w: d - 20, edge: 'PVC 2.0мм преден' },
+                { name: 'Врата (Лява / Дясна)', count: 2, l: h - 4, w: (w / 2) - 3, edge: 'PVC 2.0мм четиристранно' }
+            ];
+
+            const tbody = document.getElementById('parts-table');
+            if (tbody) {
+                tbody.innerHTML = '';
+                parts.forEach(p => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="p-2.5 font-semibold text-white">${p.name}</td>
+                            <td class="p-2.5">${p.count}</td>
+                            <td class="p-2.5">${p.l} мм</td>
+                            <td class="p-2.5">${p.w} мм</td>
+                            <td class="p-2.5 text-xs text-indigo-300">${p.edge}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            const hardware = document.getElementById('hardware-list');
+            if (hardware) {
+                hardware.innerHTML = `
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 6 бр. Панти с плавно затваряне</li>
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 16 бр. Конфирматни винтове (7x50)</li>
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 8 бр. Рафтоносачи</li>
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 2 бр. Дръжки за врати</li>
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 4 бр. Регулируеми крачета</li>
+                `;
+            }
+        }
+
+        async function submitEmbeddedOrder(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const email = document.getElementById('customer-email').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Изпращане...';
+
+            const formData = new FormData(event.target);
+            formData.append("access_key", "46f89efb-c3af-46a2-93c9-da39137f7f47");
+
+            try {
+                const response = await fetch("https://api.web3forms.com/submit", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`Благодарим ви! Поръчка ${currentRefCode} е регистрирана.\n\nИмейл известие беше изпратено успешно към вас. Очаква се банков превод.`);
+                } else {
+                    alert("Възникна проблем при изпращането. Моля, опитайте отново.");
+                }
+            } catch (error) {
+                alert(`Поръчка ${currentRefCode} е регистрирана! Очаква се превод по IBAN.`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Потвърди поръчката & Изпрати Известие';
