@@ -79,23 +79,12 @@
                     <span class="text-slate-400">Цена за генериране на проект:</span>
                     <span id="project-price" class="text-xl font-black text-indigo-400">35.00 €</span>
                 </div>
-                <p class="text-xs text-slate-400">Включва: 3D визуализация, разкрой с кантиране, спецификация на обков и PDF документ.</p>
+                <p class="text-xs text-slate-400">Включва: Параметричен разкрой, кантиране, спецификация на обков и PDF документ.</p>
             </div>
         </section>
 
-        <!-- Визуализация и резултати -->
+        <!-- Резултати и Разкрой -->
         <section class="lg:col-span-7 space-y-6">
-            
-            <div class="bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl shadow-xl text-center space-y-3">
-                <h3 class="text-lg font-bold text-white flex items-center justify-between">
-                    <span><i class="fa-solid fa-cube text-indigo-400 mr-2"></i> Визуализация на модула</span>
-                    <span id="dim-badge" class="text-xs bg-indigo-900/80 text-indigo-300 px-2.5 py-1 rounded font-mono">2000 x 800 x 550 мм</span>
-                </h3>
-                <div class="w-full h-48 bg-slate-900/90 border border-slate-700 rounded-xl flex flex-col items-center justify-center text-indigo-400 space-y-2">
-                    <i class="fa-solid fa-box-open text-5xl animate-pulse"></i>
-                    <span class="text-sm font-medium text-slate-300">Параметричен модел активен</span>
-                </div>
-            </div>
 
             <div class="bg-slate-800/60 border border-slate-700/60 p-6 rounded-2xl shadow-xl space-y-4">
                 <div class="flex justify-between items-center">
@@ -131,9 +120,9 @@
                 <p class="text-sm text-slate-300">Моля, преведете сумата по следната банкова сметка. След регистрация ще получите готов технически проект директно на имейла си!</p>
                 
                 <div class="bg-slate-900 p-4 rounded-xl space-y-2 text-sm font-mono border border-slate-700">
-                    <div><span class="text-slate-400">Получател:</span> <strong class="text-white">ВИКТОР МАРИУСОВ АНДРЕВ</strong></div>
-                    <div><span class="text-slate-400">IBAN:</span> <strong class="text-indigo-400">BG13ESPY40040015448906</strong></div>
-                    <div><span class="text-slate-400">BIC:</span> <strong class="text-white">ESPYBGS1</strong></div>
+                    <div><span class="text-slate-400">Получател:</span> <strong class="text-white">ВИКТОР МАРИУСОВ АНДРЕВ</strong>[span_5](start_span)[span_5](end_span)</div>
+                    <div><span class="text-slate-400">IBAN:</span> <strong class="text-indigo-400">BG13ESPY40040015448906</strong>[span_6](start_span)[span_6](end_span)</div>
+                    <div><span class="text-slate-400">BIC:</span> <strong class="text-white">ESPYBGS1</strong>[span_7](start_span)[span_7](end_span)</div>
                     <div><span class="text-slate-400">Основание:</span> <strong id="payment-reason" class="text-amber-400">CutCraft CC-XXXXXX</strong></div>
                 </div>
 
@@ -164,7 +153,14 @@
         document.getElementById('ref-tag').innerText = currentRefCode;
         document.getElementById('payment-reason').innerText = `CutCraft ${currentRefCode}`;
         document.getElementById('form-ref').value = currentRefCode;
-        document.getElementById('form-subject').value = `Нова поръчка CutCraft [${currentRefCode}]`;  function updateCalculation() { const h = parseFloat(document.getElementById('height').value) \vert{}\vert{} 2000; const w = parseFloat(document.getElementById('width').value) \vert{}\vert{} 800; const d = parseFloat(document.getElementById('depth').value) \vert{}\vert{} 550; const t = parseFloat(document.getElementById('thickness').value) \vert{}\vert{} 18; const type = document.getElementById('furniture-type').value;  document.getElementById('dim-badge').innerText = `${h} x ${w} x${d} мм`;
+        document.getElementById('form-subject').value = `Нова поръчка CutCraft [${currentRefCode}]`;
+
+        function updateCalculation() {
+            const h = parseFloat(document.getElementById('height').value) || 2000;
+            const w = parseFloat(document.getElementById('width').value) || 800;
+            const d = parseFloat(document.getElementById('depth').value) || 550;
+            const t = parseFloat(document.getElementById('thickness').value) || 18;
+            const type = document.getElementById('furniture-type').value;
 
             let price = "35.00 €";
             if(type.includes('kitchen_tall') || type.includes('kitchen_base')) price = "45.00 €";
@@ -176,7 +172,8 @@
 
             const innerW = w - (2 * t);
             const parts = [
-                { name: 'Ляв / Десен Страница', count: 2, l: h, w: d, edge: `PVC ${document.getElementById('edge').value}мм` }, { name: 'Дъно & Таван', count: 2, l: innerW, w: d, edge: `PVC ${document.getElementById('edge').value}мм преден` },
+                { name: 'Ляв / Десен Страница', count: 2, l: h, w: d, edge: `PVC ${document.getElementById('edge').value}мм` },
+                { name: 'Дъно & Таван', count: 2, l: innerW, w: d, edge: `PVC ${document.getElementById('edge').value}мм преден` },
                 { name: 'Гръб (HDF 3mm)', count: 1, l: h - 4, w: w - 4, edge: 'Без кант' },
                 { name: 'Вътрешен Рафт', count: 2, l: innerW - 2, w: d - 20, edge: 'PVC 2.0мм преден' },
                 { name: 'Врата (Лява / Дясна)', count: 2, l: h - 4, w: (w / 2) - 3, edge: 'PVC 2.0мм четиристранно' }
@@ -205,4 +202,46 @@
                     <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 16 бр. Конфирматни винтове (7x50)</li>
                     <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 8 бр. Рафтоносачи</li>
                     <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 2 бр. Дръжки за врати</li>
-                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 4 бр. Регулиру
+                    <li><i class="fa-solid fa-check text-indigo-400 mr-1"></i> 4 бр. Регулируеми крачета</li>
+                `;
+            }
+        }
+
+        async function submitEmbeddedOrder(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            const email = document.getElementById('customer-email').value;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Изпращане...';
+
+            const formData = new FormData(event.target);
+            formData.append("access_key", "46f89efb-c3af-46a2-93c9-da39137f7f47");
+
+            try {
+                const response = await fetch("https://api.web3forms.com/submit", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(`Благодарим ви! Поръчка ${currentRefCode} е регистрирана.\n\nИмейл известие беше изпратено успешно към вас. Очаква се банков превод.`);
+                } else {
+                    alert("Възникна проблем при изпращането. Моля, опитайте отново.");
+                }
+            } catch (error) {
+                alert(`Поръчка ${currentRefCode} е регистрирана! Очаква се превод по IBAN.`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Потвърди поръчката & Изпрати Известие';
+            }
+        }
+
+        window.addEventListener('load', function() {
+            updateCalculation();
+        });
+    </script>
+</body>
+</html>
